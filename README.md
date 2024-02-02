@@ -6,9 +6,9 @@ Fork [pkgsync](https://github.com/moparisthebest/pkgsync). Описание ра
 # Использование
 
 ## Конфигурационный файл
-Конфигурационный файл, по задумке, содержит только пути до основных файлов и ничего больше в формате `EXCLUSION_LIST=PATH`:
+Конфигурационный файл, по задумке, содержит только пути до основных файлов и ничего больше в формате `EXCLUSION_LIST=путь до файла EXLUSION_LIST`:
 
-- [`EXCLUSION_LIST`](##EXCLUSION_LIST);
+- [`EXCLUSION_LIST`](#exclusion_list-1);
 - [`BLACKLIST_LIST`](##BLACKLIST_LIST); 
 - [`REMOVE_LIST`](##REMOVE_LIST); 
 - [`INSTALL_LIST`](##INTSALL_LIST); 
