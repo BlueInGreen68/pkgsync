@@ -1,4 +1,4 @@
-Fork [pkgsync](https://github.com/moparisthebest/pkgsync)
+Fork [pkgsync](https://github.com/moparisthebest/pkgsync). Описание работы скрипта в данном README.md является субъективным и не относится к оригинальному проекту. 
 
 # pkgsync
 Простой скрипт для синхронизации установленных пакетов между машинами на базе Arch Linux.
@@ -27,6 +27,7 @@ PRESTART_SCRIPT="${PRESTART_SCRIPT:-/etc/pkgsync/pkg_prestart.sh}"
 FINISH_SCRIPT="${FINISH_SCRIPT:-/etc/pkgsync/pkg_finish.sh}"
 TMP_DIR="${TMP_DIR:-/tmp}"
 ```
+## EXCLUSION LIST
 
 По умолчанию конфигурационный файл должен находиться в `/etc/default/pkgsync`, но путь можно поменять путём изменения 5 строчки кода файла `pkgsync`:
 
@@ -35,7 +36,7 @@ TMP_DIR="${TMP_DIR:-/tmp}"
 
 set -e
 
-[ -e /ваш/путь/до_файла ] && . /ваш/путь/до_файла
+[ -e /ваш/путь/до_конфигурационного_файла ] && . /ваш/путь/до_конфигурационного_файла
 ```
 
 # Зависимости
