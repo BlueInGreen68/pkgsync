@@ -1,28 +1,10 @@
-# this is the configuration for pkgsync
-# it uses these defaults, but you can change them
+# Это конфигурационный лист для pkgsync
+# он использует значения указанных ниже переменных по умолчанию, но вы можете поменять их
 
-# list files can have comments starting with #, and do not need to be sorted
-
-# packages on this system to exclude from shared install list
 #EXCLUSION_LIST=/etc/pkgsync/pkg_exclude.list
-
-# packages in shared install list to not install on this system
-# or packages in shared remove list to not remove from this system
 #BLACKLIST_LIST=/etc/pkgsync/pkg_blacklist.list
-
-# packages to remove from all systems, you must sync it between systems
 #REMOVE_LIST=/etc/pkgsync/pkg_remove.list
-
-# packages to install on all systems, you must sync it between systems
 #INSTALL_LIST=/etc/pkgsync/pkg_install.list
-
-# scripts must be executable and have non-zero exit status for pkgsync to continue
-
-# script that is ran before pkgsync calculations start, can be used to sync various lists
 #PRESTART_SCRIPT=/etc/pkgsync/pkg_prestart.sh
-
-# script that is ran when INSTALL_LIST is changed, can be used to sync it
 #FINISH_SCRIPT=/etc/pkgsync/pkg_finish.sh
-
-# directory to store temporary working files in
 #TMP_DIR=/tmp

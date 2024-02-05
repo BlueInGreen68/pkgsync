@@ -84,4 +84,5 @@ then
     [ -x "$FINISH_SCRIPT" ] && "$FINISH_SCRIPT"
 fi
 
+# Удаление временных файлов
 rm -f "$TMP_DIR/pkg_exclude.list" "$TMP_DIR/pkg_blacklist.list" "$TMP_DIR/pkg_remove.list" "$TMP_DIR/mypkgs_with_exclusions.txt" "$TMP_DIR/mypkgs_with_exclusions_without_remove.txt" "$TMP_DIR/pkg_toremove.list" "$TMP_DIR/pkg_installed.list" "$TMP_DIR/pkg_toinstall.list" "$TMP_DIR/pkg_ourinstall.list"
