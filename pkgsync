@@ -2,7 +2,7 @@
 
 set -e
 
-[ -e /etc/default/pkgsync ] && . /etc/default/pkgsync
+[[ -e /etc/default/pkgsync ]] && . /etc/default/pkgsync
 
 EXCLUSION_LIST="${EXCLUSION_LIST:-/etc/pkgsync/pkg_exclude.list}"
 BLACKLIST_LIST="${BLACKLIST_LIST:-/etc/pkgsync/pkg_blacklist.list}"
@@ -13,7 +13,7 @@ FINISH_SCRIPT="${FINISH_SCRIPT:-/etc/pkgsync/pkg_finish.sh}"
 TMP_DIR="${TMP_DIR:-/tmp}"
 
 # Запуск prestart скрипта, если он существует
-[ -x "$PRESTART_SCRIPT" ] && "$PRESTART_SCRIPT"
+[[ -x "$PRESTART_SCRIPT" ]] && "$PRESTART_SCRIPT"
 
 # Извлчение названий пакетов из списков, сортировка с удалением дубликатов и запись во временный файл. Данных файлов может и не быть или они могут быть пустыми, скрипт продолжится в любом случае
 grep -v '^#' "$EXCLUSION_LIST" 2>/dev/null | sort -u > "$TMP_DIR/pkg_exclude.list"   || true
