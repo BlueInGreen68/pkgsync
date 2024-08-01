@@ -2,10 +2,10 @@
 
 set -e
 
-[[ -e /etc/default/pkgsync ]] && . /etc/default/pkgsync
+[[ -e "$HOME"/.dotfiles/.pkgsynclist/config ]] && . "$HOME"/.dotfiles/.pkgsynclist/config
 
 EXCLUSION_LIST="${EXCLUSION_LIST:-/etc/pkgsync/pkg_exclude.list}"
-BLACKLIST_LIST="${BLACKLIST_LIST:-/etc/pkgsync/pkg_blacklist.list}"
+BLACKLIST_LIST="${BLACKLIST_LIST:-/etc/pkgsync/pkg_blacklist.list}" 
 REMOVE_LIST="${REMOVE_LIST:-/etc/pkgsync/pkg_remove.list}"
 INSTALL_LIST="${INSTALL_LIST:-/etc/pkgsync/pkg_install.list}"
 PRESTART_SCRIPT="${PRESTART_SCRIPT:-/etc/pkgsync/pkg_prestart.sh}"
@@ -22,7 +22,7 @@ grep -v '^#' "$REMOVE_LIST"    2>/dev/null | sort -u > "$TMP_DIR/pkg_remove.list
 grep -v '^#' "$INSTALL_LIST"   2>/dev/null | sort -u > "$TMP_DIR/pkg_install.list"   || true
 
 # Основная часть скрипта
-pacman -Qq | sort | comm -23 - "$TMP_DIR/pkg_exclude.list" > "$TMP_DIR/mypkgs_with_exclusions.txt"
+pacman -Qqe | sort | comm -23 - "$TMP_DIR/pkg_exclude.list" > "$TMP_DIR/mypkgs_with_exclusions.txt"
 
 comm -23 "$TMP_DIR/mypkgs_with_exclusions.txt" "$TMP_DIR/pkg_remove.list" > "$TMP_DIR/mypkgs_with_exclusions_without_remove.txt"
 
@@ -32,10 +32,10 @@ sort -u "$TMP_DIR/mypkgs_with_exclusions_without_remove.txt" "$TMP_DIR/pkg_insta
 
 comm -13 "$TMP_DIR/mypkgs_with_exclusions_without_remove.txt" "$TMP_DIR/pkg_installed.list" | comm -23 - "$TMP_DIR/pkg_blacklist.list" > "$TMP_DIR/pkg_toinstall.list"
 
-comm -23 "$TMP_DIR/pkg_installed.list" "$TMP_DIR/pkg_install.list" > "$TMP_DIR/pkg_ourinstall.list"
+comm -23 "$TMP_DIR/pkg_installed.list" "$TMP_DIR/pkg_install.list" | comm -23 - "$TMP_DIR/pkg_blacklist.list" > "$TMP_DIR/pkg_ourinstall.list"
 
-# Установка новых пакетов
-if [ -s "$TMP_DIR/pkg_toinstall.list" ]
+## Установка новых пакетов
+if [[ -s "$TMP_DIR/pkg_toinstall.list" ]]
 then
     yn=l
     while [[ ! "$yn" =~ ^[YyNnAaQqBb]$ ]]
@@ -44,13 +44,13 @@ then
         echo
         [[ "$yn" =~ ^[Ll]$ ]] && cat "$TMP_DIR/pkg_toinstall.list"
     done
-    [[ "$yn" =~ ^[Yy]$ ]] && pacman -S --needed --confirm - < "$TMP_DIR/pkg_toinstall.list"
+    [[ "$yn" =~ ^[Yy]$ ]] && yay -S --needed --confirm - < "$TMP_DIR/pkg_toinstall.list"
     [[ "$yn" =~ ^[Bb]$ ]] && cat "$TMP_DIR/pkg_toinstall.list" >> "$BLACKLIST_LIST"
     [[ "$yn" =~ ^[AaQq]$ ]] && exit 1
 fi
 
-# Удаление пакетов
-if [ -s "$TMP_DIR/pkg_toremove.list" ]
+## Удаление пакетов
+if [[ -s "$TMP_DIR/pkg_toremove.list" ]]
 then
     yn=l
     while [[ ! "$yn" =~ ^[YyNnAaQqBb]$ ]]
@@ -59,13 +59,13 @@ then
         echo
         [[ "$yn" =~ ^[Ll]$ ]] && cat "$TMP_DIR/pkg_toremove.list"
     done
-    [[ "$yn" =~ ^[Yy]$ ]] && pacman -Ru --confirm - < "$TMP_DIR/pkg_toremove.list"
+    [[ "$yn" =~ ^[Yy]$ ]] && yay -R --confirm - < "$TMP_DIR/pkg_toremove.list"
     [[ "$yn" =~ ^[Bb]$ ]] && cat "$TMP_DIR/pkg_toremove.list" >> "$BLACKLIST_LIST"
     [[ "$yn" =~ ^[AaQq]$ ]] && exit 1
 fi
 
-# Добавление новых пакетов в общий лист INSTALL, если таковые имеются
-if [ -s "$TMP_DIR/pkg_ourinstall.list" ]
+## Добавление новых пакетов в общий лист INSTALL, если таковые имеются
+if [[ -s "$TMP_DIR/pkg_ourinstall.list" ]]
 then
     yn=l
     while [[ ! "$yn" =~ ^[YyNnAaQqEe]$ ]]
@@ -74,13 +74,37 @@ then
         echo
         [[ "$yn" =~ ^[Ll]$ ]] && cat "$TMP_DIR/pkg_ourinstall.list"
     done
-    [[ "$yn" =~ ^[Yy]$ ]] && cat "$TMP_DIR/pkg_ourinstall.list" >> "$INSTALL_LIST"
-    [[ "$yn" =~ ^[Ee]$ ]] && cat "$TMP_DIR/pkg_ourinstall.list" >> "$EXCLUSION_LIST"
-    [[ "$yn" =~ ^[AaQq]$ ]] && exit 1
 
-    # Запуск finish скрипта, если он существует
-    [ -x "$FINISH_SCRIPT" ] && "$FINISH_SCRIPT"
+    if [[ "$yn" =~ ^[Yy]$ ]]; then
+        cat "$TMP_DIR/pkg_ourinstall.list" | gum filter --no-limit >> "$INSTALL_LIST"
+        comm -23 <(sort "$TMP_DIR/pkg_ourinstall.list") <(sort "$INSTALL_LIST") >> "$EXCLUSION_LIST"
+    fi
+
+    if [[ "$yn" =~ ^[Ee]$ ]]; then
+        cat "$TMP_DIR/pkg_ourinstall.list" | gum filter --no-limit >> "$EXCLUSION_LIST"
+        comm -23 <(sort -u "$TMP_DIR/pkg_ourinstall.list") <(sort -u "$EXCLUSION_LIST") >> "$INSTALL_LIST"
+    fi
+
+    [[ "$yn" =~ ^[AaQq]$ ]] && exit 1
 fi
 
-# Удаление временных файлов
+## Очистка файла pkg_remove.txt
+if [[ -s "$HOME/.dotfiles/.pkgsynclist/pkg_remove.list" ]]
+then
+    yn=l
+    while [[ ! "$yn" =~ ^[YyNnAaQqEe]$ ]]
+    do
+        read -p "Clear pkg_remove.list? (yes/no/list/abort/exclude)..." -n 1 yn
+        echo
+        [[ "$yn" =~ ^[Ll]$ ]] && cat "$HOME/.dotfiles/.pkgsynclist/pkg_remove.list"
+    done
+    [[ "$yn" =~ ^[Yy]$ ]] && truncate -s 0 "$HOME/.dotfiles/.pkgsynclist/pkg_remove.list"
+    [[ "$yn" =~ ^[Ee]$ ]] && cat "$HOME/.dotfiles/.pkgsynclist/pkg_remove.list" >> "$EXCLUSION_LIST"
+    [[ "$yn" =~ ^[AaQq]$ ]] && exit 1
+
+    ## Запуск finish скрипта, если он существует
+    [[ -x "$FINISH_SCRIPT" ]] && "$FINISH_SCRIPT"
+fi
+
+## Удаление временных файлов
 rm -f "$TMP_DIR/pkg_exclude.list" "$TMP_DIR/pkg_blacklist.list" "$TMP_DIR/pkg_remove.list" "$TMP_DIR/mypkgs_with_exclusions.txt" "$TMP_DIR/mypkgs_with_exclusions_without_remove.txt" "$TMP_DIR/pkg_toremove.list" "$TMP_DIR/pkg_installed.list" "$TMP_DIR/pkg_toinstall.list" "$TMP_DIR/pkg_ourinstall.list"

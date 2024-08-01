@@ -1,0 +1,9 @@
+[Trigger]
+Type = Package
+Operation = Install
+Target = *
+
+[Action]
+Description = Create a list of install packages
+When = PostTransaction
+Exec = /usr/bin/bash -c '/usr/bin/pacman -Qqe > /home/<user>/.cache/pacman_pkginstall.list; for pkg in $(comm -12 <(sort <Твой путь до pkg_remove.list>) <(/usr/bin/pacman -Qqe | sort)); do sed -i "/$pkg/d" <Твой путь до pkg_remove.list>; done; /usr/bin/pacman -Qqe > /home/<user>/.cache/pacman_pkginstall.list'
