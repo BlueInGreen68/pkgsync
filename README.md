@@ -168,7 +168,7 @@ comm -23 "$TMP_DIR/pkg_installed.list" "$TMP_DIR/pkg_install.list" > "$TMP_DIR/p
 
 ## Выбор пакетов
 
-При вопросе скрипта `Append packages unique to this computer to install list and run finish script? (yes/no/list/abort/exclude)...`, при выборе `yes` или `exclude` запустится пакет `gum` и предложить выбрать, какие именно пакеты попадут в `pkg_install.list` при выборе - `yes` или в `pkg_exclude` при выборе - `exclude`.
+При вопросе скрипта `Append packages unique to this computer to install list and run finish script? (yes/no/list/abort/exclude/delete)...`, при выборе `yes` или `exclude` запустится пакет `gum` и предложить выбрать, какие именно пакеты попадут в `pkg_install.list` при выборе - `yes` или в `pkg_exclude` при выборе - `exclude`.
 
 Если, например, выбрать `yes`, отметить нужные пакеты с помощью `gum` и нажать `Enter`, то все пакеты, которые не были выбранны попадут в `pkg_exclude`. Также это работает и наоборот, если выбрать `exclude` вместо `yes`, все невыбранные пакеты попадут в `pkg_install`.
 

@@ -6,4 +6,4 @@ Target = *
 [Action]
 Description = Create a list of removed packages
 When = PostTransaction
-Exec = /usr/bin/bash -c 'for pkg in $(comm -23 <(sort /home/<user>/.cache/pacman_pkginstall.list) <(/usr/bin/pacman -Qqe | sort)); do echo "$pkg" >> <Твой путь до pkg_remove.list>; sed -i "/$pkg/d" <Твой путь до pkg_intall.list>; sed -i "/$pkg/d" <Твой путь до pkg_exclude.list>; sed -i "/$pkg/d" <Твой путь до pkg_blacklist.list>; cat <Твой путь до pkg_remove.list> > /home/<user>/.cache/pacman_pkgremove.list; sort -u /home/<user>/.cache/pacman_pkgremove.list > <Твой путь до pkg_remove.list>; done'
+Exec = /usr/bin/bash -c 'for pkg in $(comm -23 <(sort <Твой путь до pkg_install.list>) <(/usr/bin/pacman -Qqe | sort)); do echo "$pkg" >> <Твой путь до pkg_remove.list>; sed -i "/$pkg/d" <Твой путь до pkg_intall.list>; sed -i "/$pkg/d" <Твой путь до pkg_exclude.list>; sed -i "/$pkg/d" <Твой путь до pkg_blacklist.list>; cat <Твой путь до pkg_remove.list> > /home/<user>/.cache/pacman_pkgremove.list; sort -u /home/<user>/.cache/pacman_pkgremove.list > <Твой путь до pkg_remove.list>; done'

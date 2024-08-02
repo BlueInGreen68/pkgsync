@@ -68,9 +68,9 @@ fi
 if [[ -s "$TMP_DIR/pkg_ourinstall.list" ]]
 then
     yn=l
-    while [[ ! "$yn" =~ ^[YyNnAaQqEe]$ ]]
+    while [[ ! "$yn" =~ ^[YyNnAaQqEeDd]$ ]]
     do
-        read -p "Append packages unique to this computer to install list and run finish script? (yes/no/list/abort/exclude)..." -n 1 yn
+        read -p "Append packages unique to this computer to install list and run finish script? (yes/no/list/abort/exclude/delete)..." -n 1 yn
         echo
         [[ "$yn" =~ ^[Ll]$ ]] && cat "$TMP_DIR/pkg_ourinstall.list"
     done
@@ -83,6 +83,10 @@ then
     if [[ "$yn" =~ ^[Ee]$ ]]; then
         cat "$TMP_DIR/pkg_ourinstall.list" | gum filter --no-limit >> "$EXCLUSION_LIST"
         comm -23 <(sort -u "$TMP_DIR/pkg_ourinstall.list") <(sort -u "$EXCLUSION_LIST") >> "$INSTALL_LIST"
+    fi
+
+    if [[ "$yn" =~ ^[Dd]$ ]]; then
+        yay -R - < "$TMP_DIR/pkg_ourinstall.list"
     fi
 
     [[ "$yn" =~ ^[AaQq]$ ]] && exit 1
