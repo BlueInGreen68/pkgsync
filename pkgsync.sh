@@ -86,7 +86,7 @@ then
     fi
 
     if [[ "$yn" =~ ^[Dd]$ ]]; then
-        yay -R - < "$TMP_DIR/pkg_ourinstall.list"
+        cat "$TMP_DIR/pkg_ourinstall.list" | gum filter --no-limit | yay -R -
     fi
 
     [[ "$yn" =~ ^[AaQq]$ ]] && exit 1
